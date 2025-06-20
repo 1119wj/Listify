@@ -1,0 +1,157 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 매물의 종류를 나타내는 Enum (임대 / 매매)
+enum PropertyType {
+  RENTAL
+  SALE
+}
+
+// 입점한 부동산 (테넌트)
+model Agency {
+  id        String    @id @default(cuid())
+  name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  users     User[]
+  listings  Listing[]
+}
+
+// 사용자 (부동산 중개인)
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String
+  phone        String?
+  tel          String?
+  profileImage String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  agencyId     String
+  agency       Agency    @relation(fields: [agencyId], references: [id])
+
+  listings     Listing[] // 이 사용자가 담당하는 매물 목록
+  comments     Comment[] // 이 사용자가 작성한 코멘트 목록
+}
+
+// 매물 (PropertyItem)
+model Listing {
+  id String @id @default(cuid())
+
+  // --- BasicInfo ---
+  location             String
+  roadAddress          String
+  buildingName         String
+  internalManagementId String // DB에서는 문자열로 관리하는 것이 더 유연할 수 있음
+  currentStatus        String
+  mainCategory         String
+  subCategory          String
+  label                String
+
+  // --- BasePropertyItem ---
+  isHidden             Boolean  @default(false)
+  photos               String[] // 이미지 URL 배열
+  propertyType         PropertyType
+
+  // --- BuildingInfo ---
+  totalFloors            Int
+  currentFloors          String // "5/B2" 와 같은 복합적인 표현을 위해 String 추천
+  landArea               Float // 대지면적 (㎡)
+  totalFloorArea         Float // 연면적 (㎡)
+  buildingArea           Float // 건축면적 (㎡)
+  grossFloorAreaForFAR   Float // 용적률산정 연면적 (㎡)
+  primaryUsage           String
+  primaryStructure       String
+  elevator               String // "있음", "없음", "2대" 등
+  parking                String // "가능", "불가능", "3대" 등
+  roadWidth              String
+  additionalUsage        String?
+  buildingHeight         String
+  roofStructure          String
+  numberOfHouseholds     Int
+  approvalDate           DateTime?
+  constructionStartDate  DateTime?
+  occupancyApprovalDate  DateTime?
+  renovationDate         DateTime?
+
+  // --- RentalPropertyItem (임대 전용 필드) ---
+  rentalUsage          String?   // 임대 용도
+  rentalArea           Float?    // 임대면적 (㎡)
+  exclusiveArea        Float?    // 전용면적 (㎡)
+  heating              String?   // 난방 방식
+  deposit              BigInt?   // 보증금 (큰 숫자를 위해 BigInt 추천)
+  monthlyRent          BigInt?   // 월 임대료
+  fixedMonthlyCost     BigInt?   // 월 고정비
+  maintenanceFeeRental BigInt?   // 관리비 (임대)
+  tax                  Boolean?  // 부가세 포함 여부
+
+  // --- SalePropertyItem (매매 전용 필드) ---
+  purchasePrice        BigInt?   // 매매가
+  depositPrice         BigInt?   // 입금가
+  yield                Float?    // 수익률
+  averagePrice         BigInt?   // 평당가
+  securityDeposit      BigInt?   // 보증금 (매매 시 임차인)
+  monthlyRentSale      BigInt?   // 월 임대료 (매매 시 임차인)
+  maintenanceFeeSale   BigInt?   // 관리비 (매매)
+  loanStatus           String?   // 대출 현황
+
+  // --- 관계 설정 ---
+  agencyId             String
+  agency               Agency   @relation(fields: [agencyId], references: [id])
+
+  userId               String
+  user                 User     @relation(fields: [userId], references: [id])
+
+  comments             Comment[]
+  
+  // 1:1 관계 (토지 정보는 매매 매물에만 존재)
+  landInfo             LandInfo?
+}
+
+// 토지 정보 (매매 매물에만 연결)
+model LandInfo {
+  id         String @id @default(cuid())
+  listingId  String @unique
+  listing    Listing @relation(fields: [listingId], references: [id])
+
+  lotNumber               String
+  landAreaSqm             Float
+  appraisedPricePerSqm    BigInt
+  landCategory            String
+  zoningArea              String
+  usageStatus             String
+  ownershipType           String
+  ownershipChangeDate     DateTime?
+  ownershipChangeReason   String?
+  roadContactType         String
+  topography              String
+  landShape               String
+  nationalLandUsePlan     String
+  nationalLandUsePlanStatus String
+  otherLandUsePlan        String?
+  otherLandUsePlanStatus  String?
+}
+
+
+// 코멘트 및 기록
+model Comment {
+  id          String   @id @default(cuid())
+  content     String
+  recordType  String? // "코멘트", "기록" 등 타입 구분
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  listingId   String
+  listing     Listing  @relation(fields: [listingId], references: [id])
+
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+}
