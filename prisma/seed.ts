@@ -1,4 +1,4 @@
-import { PrismaClient, PropertyType } from "@prisma/client";
+import { ListingType, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -37,7 +37,7 @@ async function main() {
       // Base
       isHidden: false,
       photos: ["/sample1.jpg", "/sample2.jpg"],
-      propertyType: PropertyType.RENTAL,
+      listingType: ListingType.RENTAL,
       // BuildingInfo
       totalFloors: 20,
       currentFloors: "15",
