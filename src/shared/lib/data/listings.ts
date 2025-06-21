@@ -1,5 +1,6 @@
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/shared/lib/prisma";
 
+//todo 매매, 임대 아이템필드 추가 및 페이지네이션 추가
 export async function getAllListings() {
   console.log("Fetching all listings from DB...");
   const listings = await prisma.listing.findMany({
