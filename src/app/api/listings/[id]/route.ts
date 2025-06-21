@@ -1,6 +1,6 @@
-import { getListingById } from "@/lib/data/listings";
-import { prisma } from "@/lib/prisma";
-import { ListingUpdateInputSchema } from "@/lib/zod/schemas";
+import { getListingById } from "@/shared/lib/data/listings";
+import { prisma } from "@/shared/lib/prisma";
+import { ListingUpdateInputSchema } from "@/shared/lib/zod/schemas";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 

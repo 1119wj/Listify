@@ -1,6 +1,6 @@
-import { getAllListings } from "@/lib/data/listings";
-import { prisma } from "@/lib/prisma";
-import { ListingCreateInputSchema } from "@/lib/zod/schemas";
+import { getAllListings } from "@/shared/lib/data/listings";
+import { prisma } from "@/shared/lib/prisma";
+import { ListingCreateInputSchema } from "@/shared/lib/zod/schemas";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 

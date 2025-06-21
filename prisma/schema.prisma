@@ -94,27 +94,27 @@ model Listing {
   renovationDate       DateTime?
 
   // --- 임대 정보 (RENTAL 전용) ---
-  rentalUsage          String?
-  rentalArea           Float?
-  exclusiveArea        Float?
-  heating              String?
-  deposit              BigInt?
-  monthlyRent          BigInt?
-  fixedMonthlyCost     BigInt?
-  maintenanceFeeRental BigInt?
-  tax                  Boolean?
+  rentalUsage          String? //임대 용도
+  rentalArea           Float?  //임대 면적
+  exclusiveArea        Float?  //전용 면적
+  heating              String?  //난방 방식
+  deposit              BigInt?  //보증금
+  monthlyRent          BigInt?  //월세
+  fixedMonthlyCost     BigInt?  //고정 월세
+  tax                  Boolean?  //부과세 여부
+
+  maintenanceFee BigInt?  //관리비
+  maintenanceExpenses BigInt? // 관리비 지출
+  otherMaintenanceCosts BigInt? // 기타 관리비
 
   // --- 매매 정보 (SALE 전용) ---
-  purchasePrice      BigInt?
-  depositPrice       BigInt?
-  yield              Float?
-  averagePrice       BigInt?
-  securityDeposit    BigInt?
-  monthlyRentSale    BigInt?
-  maintenanceFeeSale BigInt?
-  loanStatus         String?
+  purchasePrice      BigInt?  //매매가
+  depositPrice       BigInt?  //입금가
+  yield              Float?  //수익률
+  averagePrice       BigInt?  //평단가
+  securityDeposit    BigInt?  //보증금
+  loanStatus         String?  //대출 현황
 
-  // --- 관계 설정 ---
   agencyId String
   agency   Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
 
